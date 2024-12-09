@@ -86,7 +86,7 @@ void format(){
 	for (i=5; i<PWDNUM; i++){
 		passwd[i].p_uid = 0;
 		passwd[i].p_gid = 0;
-		strcpy(passwd[i].password, "            ");  // PWDSIZ " "
+		strncpy(passwd[i].password, "            ", PWDSIZ);  // PWDSIZ " "
 	}
 	
 	memcpy(pwd, passwd, PWDNUM*sizeof(struct pwd)); // modify to use const values

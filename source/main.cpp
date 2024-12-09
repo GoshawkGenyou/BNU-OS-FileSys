@@ -25,7 +25,7 @@ int main(){
 		printf("Login:");
 		scanf("%d",&username);
 		printf("Password:");
-		scanf("%s",password);
+		scanf("%s", &password);
 		user_id = login(username,password);
 	}
 	do{
