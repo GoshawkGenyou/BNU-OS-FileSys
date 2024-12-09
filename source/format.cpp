@@ -15,23 +15,28 @@ void format(){
 	/* 0.initialize the passwd */
 	passwd[0].p_uid = 2116;
 	passwd[0].p_gid = 03;
-	strcpy(passwd[0].password, "dddd");
+	strncpy(passwd[0].password, "dddd", PWDSIZ);
+	passwd[0].password[PWDSIZ] = '\0';
 
 	passwd[1].p_uid = 2117;
 	passwd[1].p_gid = 03;
-	strcpy(passwd[1].password, "bbbb");
+	strncpy(passwd[1].password, "bbbb", PWDSIZ);
+	passwd[1].password[PWDSIZ] = '\0';
 
 	passwd[2].p_uid = 2118;
 	passwd[2].p_gid = 04;
-	strcpy(passwd[2].password, "abcd");  
+	strncpy(passwd[2].password, "abcd", PWDSIZ);
+	passwd[2].password[PWDSIZ] = '\0';
 
 	passwd[3].p_uid = 2119;
 	passwd[3].p_gid = 04;
-	strcpy(passwd[3].password, "cccc");
+	strncpy(passwd[3].password, "cccc", PWDSIZ);
+	passwd[3].password[PWDSIZ] = '\0';
 
 	passwd[4].p_uid = 2120;
 	passwd[4].p_gid = 05;
-	strcpy(passwd[4].password, "eeee");
+	strncpy(passwd[4].password, "eeee", PWDSIZ);
+	passwd[4].password[PWDSIZ] = '\0';
 
 	/* 1.creat the main directory and its sub dir etc and the file password */
 
@@ -46,11 +51,11 @@ void format(){
 	inode->di_size = 3*(DIRSIZ + 4);
 	inode->di_addr[0] = 0; /*block 0# is used by the main directory*/
 	
-	strcpy(dir_buf[0].d_name,"..");
+	strncpy(dir_buf[0].d_name,"..", DIRSIZ - 1);
 	dir_buf[0].d_ino = 1;
-	strcpy(dir_buf[1].d_name,".");
+	strncpy(dir_buf[1].d_name,".", DIRSIZ - 1);
 	dir_buf[1].d_ino = 1;
-	strcpy(dir_buf[2].d_name,"etc");
+	strncpy(dir_buf[2].d_name,"etc", DIRSIZ - 1);
 	dir_buf[2].d_ino = 2;
 
 	memcpy(disk+DATASTART, &dir_buf, 3*(DIRSIZ+4));
@@ -66,7 +71,7 @@ void format(){
 	dir_buf[0].d_ino = 1;
 	strcpy(dir_buf[1].d_name,".");
 	dir_buf[1].d_ino = 2;
-	strcpy(dir_buf[2].d_name,"password");
+	strncpy(dir_buf[2].d_name,"password", DIRSIZ - 1);
 	dir_buf[2].d_ino = 3;
 
 	memcpy(disk+DATASTART+BLOCKSIZ*1, dir_buf, 3*(DIRSIZ+4));

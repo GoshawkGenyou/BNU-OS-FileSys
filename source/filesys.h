@@ -122,7 +122,7 @@ struct filsys{
 struct pwd{
 	unsigned short 		p_uid;
 	unsigned short 		p_gid;
-	char 				password [PWDSIZ];
+	char 				password [PWDSIZ + 1]; // max size = 12, ensure 13th is NULL terminated.
 };
 
 struct dir{
