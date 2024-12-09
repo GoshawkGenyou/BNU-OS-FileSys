@@ -2,11 +2,14 @@
 #include "filesys.h"
 
 /****************************************************** 
-º¯Êý£ºclose 
-¹¦ÄÜ£º¹Ø±Õ´ò¿ªÎÄ¼þÊ±£¬ÐÞ¸ÄÓÃ»§´ò¿ª±íºÍÏµÍ³´ò¿ª±íÖÐµÄ¼ÍÂ¼ÐÅÏ¢ 
+å‡½æ•°ï¼šclose 
+åŠŸèƒ½ï¼šå…³é—­æ‰“å¼€æ–‡ä»¶æ—¶ï¼Œä¿®æ”¹ç”¨æˆ·æ‰“å¼€è¡¨å’Œç³»ç»Ÿæ‰“å¼€è¡¨ä¸­çš„çºªå½•ä¿¡æ¯ 
 *******************************************************/
 void close(unsigned int user_id, unsigned short cfd){
 	struct inode *inode;
+	if (cfd >= SYSOPENFILE || cfd == -1) {
+		return;
+	}
 	inode = sys_ofile[user[user_id].u_ofile[cfd]].f_inode;
 	iput(inode);
 	sys_ofile[user[user_id].u_ofile[cfd]].f_count -- ;
