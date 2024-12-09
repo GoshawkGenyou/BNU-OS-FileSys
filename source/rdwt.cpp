@@ -7,6 +7,8 @@ unsigned int read(int fd, char *buf, unsigned int size){
 	struct inode *inode;
 	char *temp_buf;
 
+	if (fd < 0 || fd >= NOFILE) return 0;
+
 	inode = sys_ofile[user[user_id].u_ofile[fd]].f_inode;
 	if (!(sys_ofile[user[user_id].u_ofile[fd]].f_flag & FREAD)){
 		printf("\nthe file is not opened for read\n");
@@ -44,6 +46,8 @@ unsigned int write(int fd, char *buf, unsigned int size){
 	struct inode *inode;
 	char *temp_buf;
 
+	if (fd < 0 || fd >= NOFILE) return 0;
+
 	inode = sys_ofile[user[user_id].u_ofile[fd]].f_inode;
 	if  (!(sys_ofile[user[user_id].u_ofile[fd]].f_flag & FWRITE)){
 		printf("\nthe file is not opened for write\n");
@@ -51,7 +55,7 @@ unsigned int write(int fd, char *buf, unsigned int size){
 	}
 	//add by liwen to check the filesize and alloc the BLOCK
 	off = sys_ofile[user[user_id].u_ofile[fd]].f_off;
-	block = ((off+size)-inode->di_size)/BLOCKSIZ;//ÉÐÐè¸öÊý 
+	block = ((off+size)-inode->di_size)/BLOCKSIZ;//Ã‰ÃÃÃ¨Â¸Ã¶ÃŠÃ½ 
 	if(((off+size)-inode->di_size)%BLOCKSIZ)
 		block++;
 	if(filsys.s_nfree < block){
