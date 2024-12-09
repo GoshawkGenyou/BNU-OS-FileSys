@@ -5,7 +5,7 @@
 void format(){
 	struct inode *inode;
 	struct direct dir_buf[BLOCKSIZ/(DIRSIZ+4)];
-	struct pwd passwd[32];
+	struct pwd passwd[PWDNUM]; // modify to not be magic number
 	unsigned int block_buf[BLOCKSIZ/sizeof(int)];
 	int i,j;
 
@@ -84,7 +84,7 @@ void format(){
 		strcpy(passwd[i].password, "            ");  // PWDSIZ " "
 	}
 	
-	memcpy(pwd, passwd, 32*sizeof(struct pwd));
+	memcpy(pwd, passwd, PWDNUM*sizeof(struct pwd)); // modify to use const values
 	memcpy(disk+DATASTART+BLOCKSIZ*2, passwd, BLOCKSIZ);
 	iput(inode);
 

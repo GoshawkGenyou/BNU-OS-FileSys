@@ -16,7 +16,7 @@ char 			str[100];
 
 int main(){ 
 	int username;
-	char password[16];
+	char password[PWDSIZ]; // make not magic number, conform to system reqs
 	user_id = -1;
     format();
 	install();

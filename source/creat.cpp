@@ -14,6 +14,7 @@ int creat(unsigned int user_id, char *filename, unsigned short mode){
 		inode = iget(dir.direct[dirid].d_ino);
 		if(!(inode->di_mode&DIFILE)){//如果不是文件
 			printf("存在同名目录！\n");
+			return 1; // ending condition	
 		}
 		if (access(user_id,inode,WRITE) == 0){
 			iput(inode);
