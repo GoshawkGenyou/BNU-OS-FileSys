@@ -7,30 +7,32 @@ void _dir(){
 	int i,j,k;          //xiao   
 	struct inode *temp_inode;
 
-	printf("\n CURRENT DIRECTORY :%s\n",dir.direct[0].d_name); 
-	printf("ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½%dï¿½ï¿½ï¿½Ä¼ï¿½/Ä¿Â¼\n",dir.size);
-	for (i=0; i<DIRNUM; i++){
-		if (dir.direct[i].d_ino != DIEMPTY){
+	printf("\n CURRENT DIRECTORY :%s\n", dir.direct[0].d_name);
+	printf("µ±Ç°¹²ÓÐ%d¸öÎÄ¼þ/Ä¿Â¼\n", dir.size);
+	for (i = 0; i < DIRNUM; i++) {
+		if (dir.direct[i].d_ino != DIEMPTY) {
 			printf("%-14s", dir.direct[i].d_name);
 			temp_inode = iget(dir.direct[i].d_ino);
-			di_mode = temp_inode->di_mode & 00777;			 
-			for (j=0; j<9; j++){
-				if (di_mode%2){
+			di_mode = temp_inode->di_mode & 00777;
+			for (j = 0; j < 9; j++) {
+				if (di_mode % 2) {
 					printf("x");
-				}else{
+				}
+				else {
 					printf("-");
 				}
-				di_mode = di_mode/2;
+				di_mode = di_mode / 2;
 			}
-			printf("\ti_ino->%d\t",temp_inode->i_ino);
-			if (temp_inode->di_mode & DIFILE){
+			printf("\ti_ino->%d\t", temp_inode->i_ino);
+			if (temp_inode->di_mode & DIFILE) {
 				printf(" %ld ", temp_inode->di_size);
 				printf("block chain:");
-				j=(temp_inode->di_size%BLOCKSIZ)?1:0;
-				for (k=0; k < temp_inode->di_size/BLOCKSIZ+j; k++)
+				j = (temp_inode->di_size % BLOCKSIZ) ? 1 : 0;
+				for (k = 0; k < temp_inode->di_size / BLOCKSIZ + j; k++)
 					printf("%4d", temp_inode->di_addr[k]);
 				printf("\n");
-			}else{
+			}
+			else {
 				printf("<dir>\n");
 			}//else
 			iput(temp_inode);
@@ -39,38 +41,38 @@ void _dir(){
 	return;
 }
 
-void mkdir(char *dirname){
+void mkdir(char* dirname) {
 	int dirid, dirpos;
-	struct inode *inode;
-	struct direct buf[BLOCKSIZ/(DIRSIZ+4)];
+	struct inode* inode;
+	struct direct buf[BLOCKSIZ / (DIRSIZ + 4)];
 	unsigned int block;
 
-	dirid= namei(dirname);
-	if (dirid != -1){
+	dirid = namei(dirname);
+	if (dirid != -1) {
 		inode = iget(dirid);
 		if (inode->di_mode & DIDIR)
-			printf("Ä¿Â¼%sï¿½Ñ´ï¿½ï¿½Ú£ï¿½\n", dirname); //xiao
+			printf("Ä¿Â¼%sÒÑ´æÔÚ£¡\n", dirname); //xiao
 		else
-			printf("%sï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½\n", dirname);
+			printf("%sÊÇÒ»¸öÎÄ¼þ£¡\n", dirname);
 		iput(inode);
 		return;
 	}
-	dirpos = iname(dirname);					//È¡ï¿½ï¿½ï¿½ï¿½addrï¿½ÐµÄ¿ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Ä¿Â¼ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	inode = ialloc();							//ï¿½ï¿½ï¿½ï¿½iï¿½Úµï¿½
-	dir.direct[dirpos].d_ino = inode->i_ino;	//ï¿½ï¿½ï¿½Ã¸ï¿½Ä¿Â¼ï¿½Ä´ï¿½ï¿½ï¿½iï¿½Úµï¿½ï¿½
-	dir.size++;									//Ä¿Â¼ï¿½ï¿½++		
-	
-	strcpy(buf[0].d_name,"..");					//ï¿½ï¿½Ä¿Â¼ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ä¿Â¼ ï¿½ï¿½Ç°Ä¿Â¼
+	dirpos = iname(dirname);					//È¡µÃÔÚaddrÖÐµÄ¿ÕÏÐÏîÎ»ÖÃ,²¢½«Ä¿Â¼ÃûÐ´µ½´ËÏîÀï
+	inode = ialloc();							//·ÖÅäi½Úµã
+	dir.direct[dirpos].d_ino = inode->i_ino;	//ÉèÖÃ¸ÃÄ¿Â¼µÄ´ÅÅÌi½ÚµãºÅ
+	dir.size++;									//Ä¿Â¼Êý++		
+
+	strcpy(buf[0].d_name, "..");					//×ÓÄ¿Â¼µÄÉÏÒ»²ãÄ¿Â¼ µ±Ç°Ä¿Â¼
 	buf[0].d_ino = cur_path_inode->i_ino;
 	strcpy(buf[1].d_name, ".");
-	buf[1].d_ino = inode->i_ino;				//ï¿½ï¿½Ä¿Â¼ï¿½Ä±ï¿½Ä¿Â¼ ï¿½ï¿½Ä¿Â¼
+	buf[1].d_ino = inode->i_ino;				//×ÓÄ¿Â¼µÄ±¾Ä¿Â¼ ×ÓÄ¿Â¼
 
 	block = balloc();
-	memcpy(disk+DATASTART+block*BLOCKSIZ, buf, BLOCKSIZ);
+	memcpy(disk + DATASTART + block * BLOCKSIZ, buf, BLOCKSIZ);
 
-	inode->di_size = 2*(DIRSIZ+4);
-	inode->di_number = 1; 
-	inode->di_mode = user[user_id].u_default_mode|DIDIR;
+	inode->di_size = 2 * (DIRSIZ + 4);
+	inode->di_number = 1;
+	inode->di_mode = user[user_id].u_default_mode | DIDIR;
 	inode->di_uid = user[user_id].u_uid;
 	inode->di_gid = user[user_id].u_gid;
 	inode->di_addr[0] = block;
@@ -80,95 +82,53 @@ void mkdir(char *dirname){
 }
 
 
-void chdir(char *dirname){
+void chdir(char* dirname) {
 	unsigned int dirid;
-	struct inode *inode;
+	struct inode* inode;
 	unsigned short block;
-	int i,j,low=0, high=0;
+	int i, j, low = 0, high = 0;
 
 	dirid = namei(dirname);
-	if (dirid == -1){
-		printf("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿Â¼%sï¿½ï¿½\n", dirname);
-		return;
-	}	
-	inode =iget(dir.direct[dirid].d_ino);
-	if(!(inode->di_mode&DIDIR)){
-		printf("%sï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ä¿Â¼ï¿½ï¿½\n", dirname);
+	if (dirid == -1) {
+		printf("²»´æÔÚÄ¿Â¼%s£¡\n", dirname);
 		return;
 	}
-	for (i=0; i<dir.size; i++){
-		if(dir.direct[i].d_ino == 0){
-			for(j=DIRNUM-1;j>=0&&dir.direct[j].d_ino == 0;j--);
-			memcpy(&dir.direct[i], &dir.direct[j], DIRSIZ+4);  //xiao
+	inode = iget(dir.direct[dirid].d_ino);
+	if (!(inode->di_mode & DIDIR)) {
+		printf("%s²»ÊÇÒ»¸öÄ¿Â¼£¡\n");
+		return;
+	}
+	for (i = 0; i < dir.size; i++) {
+		if (dir.direct[i].d_ino == 0) {
+			for (j = DIRNUM - 1; j >= 0 && dir.direct[j].d_ino == 0; j--);
+			memcpy(&dir.direct[i], &dir.direct[j], DIRSIZ + 4);  //xiao
 			dir.direct[j].d_ino = 0;
-		}		
+		}
 	}
-	j = cur_path_inode->di_size%BLOCKSIZ?1:0;
-	for (i=0; i<cur_path_inode->di_size/BLOCKSIZ+j; i++){
+	j = cur_path_inode->di_size % BLOCKSIZ ? 1 : 0;
+	for (i = 0; i < cur_path_inode->di_size / BLOCKSIZ + j; i++) {
 		bfree(cur_path_inode->di_addr[i]);
 	}
-	for (i=0; i<dir.size; i+=BLOCKSIZ/(DIRSIZ+4)){
+	for (i = 0; i < dir.size; i += BLOCKSIZ / (DIRSIZ + 4)) {
 		block = balloc();
 		cur_path_inode->di_addr[i] = block;
-		memcpy(disk+DATASTART+block*BLOCKSIZ, &dir.direct[i], BLOCKSIZ);
+		memcpy(disk + DATASTART + block * BLOCKSIZ, &dir.direct[i], BLOCKSIZ);
 	}
-	cur_path_inode->di_size = dir.size*(DIRSIZ+4);
+	cur_path_inode->di_size = dir.size * (DIRSIZ + 4);
 	iput(cur_path_inode);
 	cur_path_inode = inode;
 
-	j=0;
-	for (i=0; i<inode->di_size/BLOCKSIZ+1; i++){
-		memcpy(&dir.direct[j],disk+DATASTART+inode->di_addr[i]*BLOCKSIZ, BLOCKSIZ);
-		j+=BLOCKSIZ/(DIRSIZ+4);
+	j = 0;
+	for (i = 0; i < inode->di_size / BLOCKSIZ + 1; i++) {
+		memcpy(&dir.direct[j], disk + DATASTART + inode->di_addr[i] * BLOCKSIZ, BLOCKSIZ);
+		j += BLOCKSIZ / (DIRSIZ + 4);
 	}
-	dir.size = cur_path_inode->di_size/(DIRSIZ+4);
-	for (i=dir.size; i<DIRNUM; i++){ 
+	dir.size = cur_path_inode->di_size / (DIRSIZ + 4);
+	for (i = dir.size; i < DIRNUM; i++) {
 		dir.direct[i].d_ino = 0;
 	}
-	
+
 	//end by xiao
 
-	return;  
-} 
-
-
-
- 
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	return;
+}
