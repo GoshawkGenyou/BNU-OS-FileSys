@@ -3,10 +3,10 @@
 #include <string.h>
 #include "filesys.h" 
  
-/* º¯ÊýÃû£º	iget 							*/
-/* ×÷ÓÃ£º	Îª´ÅÅÌi½áµã·ÖÅä¶ÔÓ¦µÄÄÚ´æi½áµã	*/
-/* ²ÎÊý:	´ý·ÖÅäµÄ´ÅÅÌi½áµãºÅ				*/
-/* ·µ»ØÖµ£º	Ö¸Ïò¶ÔÓ¦µÄÄÚ´æi½áµãµÄÖ¸Õë		*/ 
+/* å‡½æ•°åï¼š	iget 							*/
+/* ä½œç”¨ï¼š	ä¸ºç£ç›˜iç»“ç‚¹åˆ†é…å¯¹åº”çš„å†…å­˜iç»“ç‚¹	*/
+/* å‚æ•°:	å¾…åˆ†é…çš„ç£ç›˜iç»“ç‚¹å·				*/
+/* è¿”å›žå€¼ï¼š	æŒ‡å‘å¯¹åº”çš„å†…å­˜iç»“ç‚¹çš„æŒ‡é’ˆ		*/ 
 struct inode * iget(unsigned int dinodeid)
 {
 	int existed = 0, inodeid;
@@ -17,19 +17,19 @@ struct inode * iget(unsigned int dinodeid)
 	int i;
 
 
-	inodeid = dinodeid % NHINO;//¼ÆËãÄÚ´æ½áµãÓ¦¸ÃÔÚµÚ¼¸¸ö¹þÏ£¶ÓÁÐÀï
-	if (hinode[inodeid].i_forw == NULL)//Èô¸Ã¹þÏ£¶ÓÁÐÎª¿Õ£¬ÄÚ´æ½áµãÒ»¶¨Î´±»´´½¨
+	inodeid = dinodeid % NHINO;//è®¡ç®—å†…å­˜ç»“ç‚¹åº”è¯¥åœ¨ç¬¬å‡ ä¸ªå“ˆå¸Œé˜Ÿåˆ—é‡Œ
+	if (hinode[inodeid].i_forw == NULL)//è‹¥è¯¥å“ˆå¸Œé˜Ÿåˆ—ä¸ºç©ºï¼Œå†…å­˜ç»“ç‚¹ä¸€å®šæœªè¢«åˆ›å»º
 		existed = 0;
-	else//Èô²»Îª¿Õ£¬´Ó¸Ã¹þÏ£¶ÓÁÐÍ·¿ªÊ¼²éÕÒ
+	else//è‹¥ä¸ä¸ºç©ºï¼Œä»Žè¯¥å“ˆå¸Œé˜Ÿåˆ—å¤´å¼€å§‹æŸ¥æ‰¾
 	{
 		temp = hinode[inodeid].i_forw; 
 		while (temp)
 		{
-			if (temp->i_ino == dinodeid)//ÈôÕÒµ½
+			if (temp->i_ino == dinodeid)//è‹¥æ‰¾åˆ°
 			{
 				existed = 1;
 				temp->i_count ++;
-				return temp;//·µ»Ø¸ÃÄÚ´æ½áµãÖ¸Õë
+				return temp;//è¿”å›žè¯¥å†…å­˜ç»“ç‚¹æŒ‡é’ˆ
 			}
 			else
 				temp = temp->i_forw;
@@ -37,35 +37,35 @@ struct inode * iget(unsigned int dinodeid)
 		}
 	}
 
-	/* ÈôÃ»ÓÐÕÒµ½ */   
-	/* 1. ¼ÆËã¸Ã´ÅÅÌi½áµãÔÚÎÄ¼þ¾íÖÐµÄÎ»ÖÃ */
+	/* è‹¥æ²¡æœ‰æ‰¾åˆ° */   
+	/* 1. è®¡ç®—è¯¥ç£ç›˜iç»“ç‚¹åœ¨æ–‡ä»¶å·ä¸­çš„ä½ç½® */
 	addr = DINODESTART + dinodeid * DINODESIZ;
 
-	/* 2. ·ÖÅäÒ»¸öÄÚ´æi½áµã */
+	/* 2. åˆ†é…ä¸€ä¸ªå†…å­˜iç»“ç‚¹ */
 	newinode = (struct inode *)malloc(sizeof(struct inode));
 
-	/* 3. ÓÃ´ÅÅÌi½áµã³õÊ¼»¯ÄÚ´æi½áµã */
+	/* 3. ç”¨ç£ç›˜iç»“ç‚¹åˆå§‹åŒ–å†…å­˜iç»“ç‚¹ */
 	memcpy(&(newinode->di_number), disk+addr, DINODESIZ);
 
-	/* 4. ½«ÄÚ´æi½áµãÁ´ÈëÏàÓ¦µÄ¹þÏ£¶ÓÁÐÀï*/
+	/* 4. å°†å†…å­˜iç»“ç‚¹é“¾å…¥ç›¸åº”çš„å“ˆå¸Œé˜Ÿåˆ—é‡Œ*/
 	newinode->i_forw = hinode[inodeid].i_forw;
 	hinode[inodeid].i_forw = newinode; 
 	newinode->i_back = newinode;
 	if (newinode->i_forw)
 		newinode->i_forw->i_back = newinode;
 
-	/*5. ³õÊ¼»¯ÄÚ´æi½áµãµÄÆäËûÊý¾ÝÏî */
+	/*5. åˆå§‹åŒ–å†…å­˜iç»“ç‚¹çš„å…¶ä»–æ•°æ®é¡¹ */
 	newinode->i_count = 1;
-	newinode->i_flag = 0;   /* ±íÊ¾Î´¸üÐÂ */
+	newinode->i_flag = 0;   /* è¡¨ç¤ºæœªæ›´æ–° */
 	newinode->i_ino = dinodeid;
 
 	return newinode;
 }
 
-/* º¯ÊýÃû£º	iput							*/
-/* ×÷ÓÃ£º	»ØÊÕÄÚ´æi½áµã					*/
-/* ²ÎÊý:	Ö¸Ïò´ý»ØÊÕµÄÄÚ´æi½áµãÖ¸Õë		*/
-/* ·µ»ØÖµ£º	ÎÞ								*/ 
+/* å‡½æ•°åï¼š	iput							*/
+/* ä½œç”¨ï¼š	å›žæ”¶å†…å­˜iç»“ç‚¹					*/
+/* å‚æ•°:	æŒ‡å‘å¾…å›žæ”¶çš„å†…å­˜iç»“ç‚¹æŒ‡é’ˆ		*/
+/* è¿”å›žå€¼ï¼š	æ— 								*/ 
 void iput(struct inode *pinode)
 {
 	long addr;
@@ -75,10 +75,10 @@ void iput(struct inode *pinode)
 	if (pinode == nullptr) 
 	{
 		free(pinode);
-        return;
-    }
+        	return;
+    	}
 
-	if (pinode->i_count > 1)//ÈôÒýÓÃ¼ÆÊý>1
+	if (pinode->i_count > 1)//è‹¥å¼•ç”¨è®¡æ•°>1
 	{
 		pinode->i_count --;
 
@@ -86,27 +86,27 @@ void iput(struct inode *pinode)
 	}
 	else
 	{
-		if (pinode->di_number != 0)//ÈôÁª½á¼ÆÊý²»Îª0
+		if (pinode->di_number != 0)//è‹¥è”ç»“è®¡æ•°ä¸ä¸º0
 		{
-			/* °ÑÄÚ´æi½áµãµÄÄÚÈÝÐ´»Ø´ÅÅÌi½áµã */
+			/* æŠŠå†…å­˜iç»“ç‚¹çš„å†…å®¹å†™å›žç£ç›˜iç»“ç‚¹ */
 			addr = DINODESTART + pinode->i_ino *DINODESIZ;
 			memcpy(disk+addr, &pinode->di_number, DINODESIZ);
 		}
 		else
 		{
-			/* É¾³ý´ÅÅÌi½áµãºÍÎÄ¼þ¶ÔÓ¦µÄÎïÀí¿é */
+			/* åˆ é™¤ç£ç›˜iç»“ç‚¹å’Œæ–‡ä»¶å¯¹åº”çš„ç‰©ç†å— */
 			block_num = pinode->di_size/BLOCKSIZ;
 			for (i=0; i<block_num; i++)
 				bfree(pinode->di_addr[i]);
 			ifree(pinode->i_ino);
 		}
 
-		/* ÊÍ·ÅÄÚ´æi½áµã */
+		/* é‡Šæ”¾å†…å­˜iç»“ç‚¹ */
 		{
 			int inodeid;
-			inodeid = (pinode->i_ino)  % NHINO ;//ÕÒµ½ËùÔÚµÄ¹þÏ£¶ÓÁÐ
+			inodeid = (pinode->i_ino)  % NHINO ;//æ‰¾åˆ°æ‰€åœ¨çš„å“ˆå¸Œé˜Ÿåˆ—
 
-			/* ´Ó¸Ã¹þÏ£¶ÓÁÐÀïÉ¾³ý */
+			/* ä»Žè¯¥å“ˆå¸Œé˜Ÿåˆ—é‡Œåˆ é™¤ */
 			if (hinode[inodeid].i_forw == pinode)
 			{
 				hinode[inodeid].i_forw = pinode->i_forw;
