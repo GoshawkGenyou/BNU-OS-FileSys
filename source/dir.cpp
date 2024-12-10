@@ -38,6 +38,7 @@ void _dir(){
 	}//for 
 	return;
 }
+
 void mkdir(char *dirname){
 	int dirid, dirpos;
 	struct inode *inode;
@@ -91,8 +92,9 @@ void chdir(char *dirname){
 		return;
 	}	
 	inode =iget(dir.direct[dirid].d_ino);
+
 	if(!(inode->di_mode&DIDIR)){
-		printf("%s不是一个目录！\n");
+		printf("%s不是一个目录！\n", dirname);
 		return;
 	}
 	for (i=0; i<dir.size; i++){
