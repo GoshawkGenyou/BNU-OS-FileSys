@@ -38,6 +38,7 @@ void _dir(){
 	}//for 
 	return;
 }
+
 void mkdir(char *dirname){
 	int dirid, dirpos;
 	struct inode *inode;
