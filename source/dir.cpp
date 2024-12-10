@@ -48,21 +48,21 @@ void mkdir(char *dirname){
 	if (dirid != -1){
 		inode = iget(dirid);
 		if (inode->di_mode & DIDIR)
-			printf("鐩綍%s宸插瓨鍦紒\n", dirname); //xiao
+			printf("目录%s已存在！\n", dirname); //xiao
 		else
-			printf("%s鏄竴涓枃浠讹紒\n", dirname);
+			printf("%s是一个文件！\n", dirname);
 		iput(inode);
 		return;
 	}
-	dirpos = iname(dirname);					//ȡ����addr�еĿ�����λ��,����Ŀ¼��д��������
-	inode = ialloc();							//����i�ڵ�
-	dir.direct[dirpos].d_ino = inode->i_ino;	//���ø�Ŀ¼�Ĵ���i�ڵ��
-	dir.size++;									//Ŀ¼��++		
+	dirpos = iname(dirname);					//取得在addr中的空闲项位置,并将目录名写到此项里
+	inode = ialloc();							//分配i节点
+	dir.direct[dirpos].d_ino = inode->i_ino;	//设置该目录的磁盘i节点号
+	dir.size++;									//目录数++		
 	
-	strcpy(buf[0].d_name,"..");					//��Ŀ¼����һ��Ŀ¼ ��ǰĿ¼
+	strcpy(buf[0].d_name,"..");					//子目录的上一层目录 当前目录
 	buf[0].d_ino = cur_path_inode->i_ino;
 	strcpy(buf[1].d_name, ".");
-	buf[1].d_ino = inode->i_ino;				//瀛愮洰褰曠殑鏈洰褰?瀛愮洰褰?
+	buf[1].d_ino = inode->i_ino;				//子目录的本目录 子目录
 	block = balloc();
 	memcpy(disk+DATASTART+block*BLOCKSIZ, buf, BLOCKSIZ);
 
@@ -86,12 +86,12 @@ void chdir(char *dirname){
 
 	dirid = namei(dirname);
 	if (dirid == -1){
-		printf("������Ŀ¼%s��\n", dirname);
+		printf("不存在目录%s！\n", dirname);
 		return;
 	}	
 	inode =iget(dir.direct[dirid].d_ino);
 	if(!(inode->di_mode&DIDIR)){
-		printf("%s����һ��Ŀ¼��\n");
+		printf("%s不是一个目录！\n");
 		return;
 	}
 	for (i=0; i<dir.size; i++){
@@ -125,31 +125,31 @@ void chdir(char *dirname){
 	}
 	
 	if (dirname[0] == '.'&&dirname[1] == '\0'){
-        // 不操作
-        return;
-    }
-    else if (strcmp(dirname, "..") == 0){
-        // 返回上一级目录，移除 current_path 中的最后一个目录
-        if (strcmp(current_path, "/") != 0){
-            char *last_slash = strrchr(current_path, '/');
-            if (last_slash != NULL){
-                if (last_slash == current_path){
-                    // 已到根目录
-                    current_path[1] = '\0';
-                }
-                else{
-                    *last_slash = '\0';
-                }
-            }
-        }
-    }
-    else{
-        // 进入子目录，追加到 current_path
-        if (strcmp(current_path, "/") != 0){
-            strncat(current_path, "/", MAX_PATH - strlen(current_path) - 1);
-        }
-        strncat(current_path, dirname, MAX_PATH - strlen(current_path) - 1);
-    }
+        	// 不操作
+        	return;
+    	}
+    	else if (strcmp(dirname, "..") == 0){
+        	// 返回上一级目录，移除 current_path 中的最后一个目录
+       	 	if (strcmp(current_path, "/") != 0){
+            		char *last_slash = strrchr(current_path, '/');
+            		if (last_slash != NULL){
+                		if (last_slash == current_path){
+                    			// 已到根目录
+                    			current_path[1] = '\0';
+                		}
+                		else{
+                    			*last_slash = '\0';
+                		}
+            		}
+        	}
+    	}
+    	else{
+        	// 进入子目录，追加到 current_path
+        	if (strcmp(current_path, "/") != 0){
+            		strncat(current_path, "/", MAX_PATH - strlen(current_path) - 1);
+        	}
+        	strncat(current_path, dirname, MAX_PATH - strlen(current_path) - 1);
+    	}
 
 	return;  
 } 
