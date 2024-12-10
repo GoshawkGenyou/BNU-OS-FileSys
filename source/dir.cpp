@@ -8,7 +8,7 @@ void _dir(){
 	struct inode *temp_inode;
 
 	printf("\n CURRENT DIRECTORY :%s\n",dir.direct[0].d_name); 
-	printf("µ±Ç°¹²ÓÐ%d¸öÎÄ¼þ/Ä¿Â¼\n",dir.size);
+	printf("ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½%dï¿½ï¿½ï¿½Ä¼ï¿½/Ä¿Â¼\n",dir.size);
 	for (i=0; i<DIRNUM; i++){
 		if (dir.direct[i].d_ino != DIEMPTY){
 			printf("%-14s", dir.direct[i].d_name);
@@ -49,21 +49,21 @@ void mkdir(char *dirname){
 	if (dirid != -1){
 		inode = iget(dirid);
 		if (inode->di_mode & DIDIR)
-			printf("Ä¿Â¼%sÒÑ´æÔÚ£¡\n", dirname); //xiao
+			printf("Ä¿Â¼%sï¿½Ñ´ï¿½ï¿½Ú£ï¿½\n", dirname); //xiao
 		else
-			printf("%sÊÇÒ»¸öÎÄ¼þ£¡\n", dirname);
+			printf("%sï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½\n", dirname);
 		iput(inode);
 		return;
 	}
-	dirpos = iname(dirname);					//È¡µÃÔÚaddrÖÐµÄ¿ÕÏÐÏîÎ»ÖÃ,²¢½«Ä¿Â¼ÃûÐ´µ½´ËÏîÀï
-	inode = ialloc();							//·ÖÅäi½Úµã
-	dir.direct[dirpos].d_ino = inode->i_ino;	//ÉèÖÃ¸ÃÄ¿Â¼µÄ´ÅÅÌi½ÚµãºÅ
-	dir.size++;									//Ä¿Â¼Êý++		
+	dirpos = iname(dirname);					//È¡ï¿½ï¿½ï¿½ï¿½addrï¿½ÐµÄ¿ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Ä¿Â¼ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	inode = ialloc();							//ï¿½ï¿½ï¿½ï¿½iï¿½Úµï¿½
+	dir.direct[dirpos].d_ino = inode->i_ino;	//ï¿½ï¿½ï¿½Ã¸ï¿½Ä¿Â¼ï¿½Ä´ï¿½ï¿½ï¿½iï¿½Úµï¿½ï¿½
+	dir.size++;									//Ä¿Â¼ï¿½ï¿½++		
 	
-	strcpy(buf[0].d_name,"..");					//×ÓÄ¿Â¼µÄÉÏÒ»²ãÄ¿Â¼ µ±Ç°Ä¿Â¼
+	strcpy(buf[0].d_name,"..");					//ï¿½ï¿½Ä¿Â¼ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ä¿Â¼ ï¿½ï¿½Ç°Ä¿Â¼
 	buf[0].d_ino = cur_path_inode->i_ino;
 	strcpy(buf[1].d_name, ".");
-	buf[1].d_ino = inode->i_ino;				//×ÓÄ¿Â¼µÄ±¾Ä¿Â¼ ×ÓÄ¿Â¼
+	buf[1].d_ino = inode->i_ino;				//ï¿½ï¿½Ä¿Â¼ï¿½Ä±ï¿½Ä¿Â¼ ï¿½ï¿½Ä¿Â¼
 
 	block = balloc();
 	memcpy(disk+DATASTART+block*BLOCKSIZ, buf, BLOCKSIZ);
@@ -88,12 +88,12 @@ void chdir(char *dirname){
 
 	dirid = namei(dirname);
 	if (dirid == -1){
-		printf("²»´æÔÚÄ¿Â¼%s£¡\n", dirname);
+		printf("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿Â¼%sï¿½ï¿½\n", dirname);
 		return;
 	}	
 	inode =iget(dir.direct[dirid].d_ino);
 	if(!(inode->di_mode&DIDIR)){
-		printf("%s²»ÊÇÒ»¸öÄ¿Â¼£¡\n");
+		printf("%sï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ä¿Â¼ï¿½ï¿½\n", dirname);
 		return;
 	}
 	for (i=0; i<dir.size; i++){
