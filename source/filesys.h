@@ -62,6 +62,8 @@
 #define FWRITE   		00002
 #define FAPPEND   		00004
 
+#define MAX_PATH        256
+
 //Includes
 #include <stdio.h>
 #include <string.h>
@@ -73,7 +75,7 @@
 
 /* fseek origin */
 //#define SEEK_SET  		0
-
+extern char current_path[MAX_PATH];
 
 struct inode{
 	struct inode  	*i_forw;

@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <string.h>
-#include "filesys.h" 
- 
+#include "filesys.h"
+
 void _dir(){
 	unsigned int di_mode;
-	int i,j,k;          //xiao   
+	int i,j,k;          //xiao
 	struct inode *temp_inode;
 
-	printf("\n CURRENT DIRECTORY :%s\n",dir.direct[0].d_name); 
-	printf("��ǰ����%d���ļ�/Ŀ¼\n",dir.size);
+	printf("\n CURRENT DIRECTORY :%s\n",current_path); 
+	printf("当前共有%d个文件/目录\n",dir.size);
 	for (i=0; i<DIRNUM; i++){
 		if (dir.direct[i].d_ino != DIEMPTY){
 			printf("%-14s", dir.direct[i].d_name);
@@ -34,8 +34,8 @@ void _dir(){
 				printf("<dir>\n");
 			}//else
 			iput(temp_inode);
-		}// if (dir.direct[i].d_ino != DIEMPTY) 
-	}//for 
+		}// if (dir.direct[i].d_ino != DIEMPTY)
+	}//for
 	return;
 }
 void mkdir(char *dirname){
@@ -48,9 +48,9 @@ void mkdir(char *dirname){
 	if (dirid != -1){
 		inode = iget(dirid);
 		if (inode->di_mode & DIDIR)
-			printf("Ŀ¼%s�Ѵ��ڣ�\n", dirname); //xiao
+			printf("鐩綍%s宸插瓨鍦紒\n", dirname); //xiao
 		else
-			printf("%s��һ���ļ���\n", dirname);
+			printf("%s鏄竴涓枃浠讹紒\n", dirname);
 		iput(inode);
 		return;
 	}
@@ -62,8 +62,7 @@ void mkdir(char *dirname){
 	strcpy(buf[0].d_name,"..");					//��Ŀ¼����һ��Ŀ¼ ��ǰĿ¼
 	buf[0].d_ino = cur_path_inode->i_ino;
 	strcpy(buf[1].d_name, ".");
-	buf[1].d_ino = inode->i_ino;				//��Ŀ¼�ı�Ŀ¼ ��Ŀ¼
-
+	buf[1].d_ino = inode->i_ino;				//瀛愮洰褰曠殑鏈洰褰?瀛愮洰褰?
 	block = balloc();
 	memcpy(disk+DATASTART+block*BLOCKSIZ, buf, BLOCKSIZ);
 
@@ -125,7 +124,32 @@ void chdir(char *dirname){
 		dir.direct[i].d_ino = 0;
 	}
 	
-	//end by xiao
+	if (dirname[0] == '.'&&dirname[1] == '\0'){
+        // 不操作
+        return;
+    }
+    else if (strcmp(dirname, "..") == 0){
+        // 返回上一级目录，移除 current_path 中的最后一个目录
+        if (strcmp(current_path, "/") != 0){
+            char *last_slash = strrchr(current_path, '/');
+            if (last_slash != NULL){
+                if (last_slash == current_path){
+                    // 已到根目录
+                    current_path[1] = '\0';
+                }
+                else{
+                    *last_slash = '\0';
+                }
+            }
+        }
+    }
+    else{
+        // 进入子目录，追加到 current_path
+        if (strcmp(current_path, "/") != 0){
+            strncat(current_path, "/", MAX_PATH - strlen(current_path) - 1);
+        }
+        strncat(current_path, dirname, MAX_PATH - strlen(current_path) - 1);
+    }
 
 	return;  
 } 
