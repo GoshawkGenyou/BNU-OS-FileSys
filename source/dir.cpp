@@ -89,12 +89,12 @@ void chdir(char* dirname) {
 
 	dirid = namei(dirname);
 	if (dirid == -1) {
-		printf("������Ŀ¼%s��\n", dirname);
+		printf("不存在目录%s！\n", dirname);
 		return;
 	}
 	inode = iget(dir.direct[dirid].d_ino);
 	if (!(inode->di_mode & DIDIR)) {
-		printf("%s����һ��Ŀ¼��\n", dirname);
+		printf("%s不是一个目录！\n", dirname);
 		return;
 	}
 	for (i = 0; i < dir.size; i++) {
