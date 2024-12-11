@@ -1,16 +1,16 @@
-#include <stdio.h>
+ï»¿#include <stdio.h>
 #include <string.h>
-#include "filesys.h" 
- 
+#include "filesys.h"
+
 void _dir(){
 	unsigned int di_mode;
-	int i,j,k;          //xiao   
+	int i,j,k;          //xiao
 	struct inode *temp_inode;
 
-	printf("\n CURRENT DIRECTORY :%s\n", dir.direct[0].d_name);
-	printf("µ±Ç°¹²ÓĞ%d¸öÎÄ¼ş/Ä¿Â¼\n", dir.size);
-	for (i = 0; i < DIRNUM; i++) {
-		if (dir.direct[i].d_ino != DIEMPTY) {
+	printf("\n CURRENT DIRECTORY :%s\n",current_path); 
+	printf("å½“å‰å…±æœ‰%dä¸ªæ–‡ä»¶/ç›®å½•\n",dir.size);
+	for (i=0; i<DIRNUM; i++){
+		if (dir.direct[i].d_ino != DIEMPTY){
 			printf("%-14s", dir.direct[i].d_name);
 			temp_inode = iget(dir.direct[i].d_ino);
 			di_mode = temp_inode->di_mode & 00777;
@@ -36,8 +36,8 @@ void _dir(){
 				printf("<dir>\n");
 			}//else
 			iput(temp_inode);
-		}// if (dir.direct[i].d_ino != DIEMPTY) 
-	}//for 
+		}// if (dir.direct[i].d_ino != DIEMPTY)
+	}//for
 	return;
 }
 
@@ -51,22 +51,21 @@ void mkdir(char* dirname) {
 	if (dirid != -1) {
 		inode = iget(dirid);
 		if (inode->di_mode & DIDIR)
-			printf("Ä¿Â¼%sÒÑ´æÔÚ£¡\n", dirname); //xiao
+			printf("ç›®å½•%så·²å­˜åœ¨ï¼\n", dirname); //xiao
 		else
-			printf("%sÊÇÒ»¸öÎÄ¼ş£¡\n", dirname);
+			printf("%sæ˜¯ä¸€ä¸ªæ–‡ä»¶ï¼\n", dirname);
 		iput(inode);
 		return;
 	}
-	dirpos = iname(dirname);					//È¡µÃÔÚaddrÖĞµÄ¿ÕÏĞÏîÎ»ÖÃ,²¢½«Ä¿Â¼ÃûĞ´µ½´ËÏîÀï
-	inode = ialloc();							//·ÖÅäi½Úµã
-	dir.direct[dirpos].d_ino = inode->i_ino;	//ÉèÖÃ¸ÃÄ¿Â¼µÄ´ÅÅÌi½ÚµãºÅ
-	dir.size++;									//Ä¿Â¼Êı++		
+	dirpos = iname(dirname);					//å–å¾—åœ¨addrä¸­çš„ç©ºé—²é¡¹ä½ç½®,å¹¶å°†ç›®å½•åå†™åˆ°æ­¤é¡¹é‡Œ
+	inode = ialloc();							//åˆ†é…ièŠ‚ç‚¹
+	dir.direct[dirpos].d_ino = inode->i_ino;	//è®¾ç½®è¯¥ç›®å½•çš„ç£ç›˜ièŠ‚ç‚¹å·
+	dir.size++;									//ç›®å½•æ•°++		
 
-	strcpy(buf[0].d_name, "..");					//×ÓÄ¿Â¼µÄÉÏÒ»²ãÄ¿Â¼ µ±Ç°Ä¿Â¼
+	strcpy(buf[0].d_name, "..");					//å­ç›®å½•çš„ä¸Šä¸€å±‚ç›®å½• å½“å‰ç›®å½•
 	buf[0].d_ino = cur_path_inode->i_ino;
 	strcpy(buf[1].d_name, ".");
-	buf[1].d_ino = inode->i_ino;				//×ÓÄ¿Â¼µÄ±¾Ä¿Â¼ ×ÓÄ¿Â¼
-
+	buf[1].d_ino = inode->i_ino;				//å­ç›®å½•çš„æœ¬ç›®å½• å­ç›®å½•
 	block = balloc();
 	memcpy(disk + DATASTART + block * BLOCKSIZ, buf, BLOCKSIZ);
 
@@ -90,12 +89,12 @@ void chdir(char* dirname) {
 
 	dirid = namei(dirname);
 	if (dirid == -1) {
-		printf("²»´æÔÚÄ¿Â¼%s£¡\n", dirname);
+		printf("ä¸å­˜åœ¨ç›®å½•%sï¼\n", dirname);
 		return;
 	}
 	inode = iget(dir.direct[dirid].d_ino);
 	if (!(inode->di_mode & DIDIR)) {
-		printf("%s²»ÊÇÒ»¸öÄ¿Â¼£¡\n", dirname);
+		printf("%sä¸æ˜¯ä¸€ä¸ªç›®å½•ï¼\n", dirname);
 		return;
 	}
 	for (i = 0; i < dir.size; i++) {
@@ -127,8 +126,33 @@ void chdir(char* dirname) {
 	for (i = dir.size; i < DIRNUM; i++) {
 		dir.direct[i].d_ino = 0;
 	}
-
-	//end by xiao
+	
+	if (dirname[0] == '.'&&dirname[1] == '\0'){
+        	// ä¸æ“ä½œ
+        	return;
+    	}
+    	else if (strcmp(dirname, "..") == 0){
+        	// è¿”å›ä¸Šä¸€çº§ç›®å½•ï¼Œç§»é™¤ current_path ä¸­çš„æœ€åä¸€ä¸ªç›®å½•
+       	 	if (strcmp(current_path, "/") != 0){
+            	char *last_slash = strrchr(current_path, '/');
+            	if (last_slash != NULL){
+                	if (last_slash == current_path){
+                    		// å·²åˆ°æ ¹ç›®å½•
+                    	current_path[1] = '\0';
+                	}
+                	else{
+                    	*last_slash = '\0';
+                	}
+            	}
+        	}
+    	}
+    	else{
+        	// è¿›å…¥å­ç›®å½•ï¼Œè¿½åŠ åˆ° current_path
+        	if (strcmp(current_path, "/") != 0){
+            	strncat(current_path, "/", MAX_PATH - strlen(current_path) - 1);
+        	}
+        	strncat(current_path, dirname, MAX_PATH - strlen(current_path) - 1);
+    	}
 
 	return;
 }

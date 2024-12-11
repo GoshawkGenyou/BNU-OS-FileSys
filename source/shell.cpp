@@ -25,8 +25,8 @@ int getcid(char *command){
 int shell(int user_id,char *str){
 	char seps[] =" \t\n\0";
 	char* token,*tstr,*buf;
-	unsigned short mode,fd;
-	int cid,size;
+	unsigned short mode;
+	int cid,size,fd;
 	token = strtok(str,seps);
 	if(token == NULL)
 		return 1;

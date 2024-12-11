@@ -1,14 +1,14 @@
 #ifndef _FILESYS_H
 #define _FILESYS_H 
  
-#define delete 		dele     		//delete 在c++里是保留字  by tangfl
+#define delete 			dele     		//delete 在c++里是保留字  by tangfl
 //#define exit(a)		return			//建议使用 return         by tangfl 
 
 //All Defines
-#define BLOCKSIZ        512			//每个块的大小
-#define SYSOPENFILE     40
-#define DIRNUM          128			//一个目录下 最多 子目录数
-#define DIRSIZ          12			//目录名长度 windows32下int长度为4 xiao 14->12
+#define BLOCKSIZ        	512			//每个块的大小
+#define SYSOPENFILE     	40
+#define DIRNUM          	128			//一个目录下 最多 子目录数
+#define DIRSIZ          	12			//目录名长度 windows32下int长度为4 xiao 14->12
 #define PWDSIZ 			12			//密码最大长度
 #define PWDNUM 			32
 #define NOFILE   		20			//用户最多打开文件数
@@ -23,21 +23,21 @@
 #define FILEBLK   		512							//数据块数
 #define NICFREE  		50							//超级块内空闲块堆栈大小
 #define NICINOD  		50							//超级块内空闲i节点数组大小
-#define DINODESTART  	(2*BLOCKSIZ)				//i节点开始地址 空出1024，第一个为引导区，第二块为超级块
+#define DINODESTART  		(2*BLOCKSIZ)				//i节点开始地址 空出1024，第一个为引导区，第二块为超级块
 #define DATASTART  		((2+DINODEBLK)*BLOCKSIZ)	//数据区开始地址 DINODESTART+DINODEBLK*BLOCKSIZ	/*d:17408    0x4400*/
 
 
 /*di_mode*/
 #define DIEMPTY   		00000						//空权限
-#define DIFILE      	01000						//类型 文件
+#define DIFILE      		01000						//类型 文件
 #define DIDIR     		02000						//类型 目录
 
 #define UDIREAD 		00001						//用户权限
 #define UDIWRITE  		00002
-#define UDIEXICUTE  	00004
+#define UDIEXICUTE  		00004
 #define GDIREAD   		00010						//用户组权限
 #define GDIWRITE  		00020
-#define GDIEXICUTE  	00040
+#define GDIEXICUTE  		00040
 #define ODIREAD  		00100						//pubilc权限
 #define ODIWRITE 		00200
 #define ODIEXICUTE 		00400
@@ -48,7 +48,7 @@
 #define EXICUTE 		3
 
 
-#define DEFAULTMODE 	00777					//默认权限
+#define DEFAULTMODE 		00777					//默认权限
 
 
 /* i_flag */
@@ -62,6 +62,8 @@
 #define FWRITE   		00002
 #define FAPPEND   		00004
 
+#define MAX_PATH        	256
+
 //Includes
 #include <stdio.h>
 #include <string.h>
@@ -73,7 +75,7 @@
 
 /* fseek origin */
 //#define SEEK_SET  		0
-
+extern char current_path[MAX_PATH];
 
 struct inode{
 	struct inode  	*i_forw;

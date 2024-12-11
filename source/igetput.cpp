@@ -72,6 +72,12 @@ void iput(struct inode *pinode)
 	unsigned int block_num;
 	int i;
 
+	if (pinode == nullptr) 
+	{
+		free(pinode);
+        	return;
+    	}
+
 	if (pinode->i_count > 1)//若引用计数>1
 	{
 		pinode->i_count --;

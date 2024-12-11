@@ -12,6 +12,7 @@ struct inode* 	cur_path_inode;
 int 			user_id;
 char   			disk[(DINODEBLK+FILEBLK+2)*BLOCKSIZ];
 char 			str[100];
+char            current_path[MAX_PATH] = "/";
 
 
 int main(){ 
