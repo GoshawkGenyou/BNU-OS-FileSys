@@ -1,4 +1,4 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <string.h>
 #include "filesys.h"
 
@@ -134,22 +134,22 @@ void chdir(char* dirname) {
     	else if (strcmp(dirname, "..") == 0){
         	// 返回上一级目录，移除 current_path 中的最后一个目录
        	 	if (strcmp(current_path, "/") != 0){
-            		char *last_slash = strrchr(current_path, '/');
-            		if (last_slash != NULL){
-                		if (last_slash == current_path){
-                    			// 已到根目录
-                    			current_path[1] = '\0';
-                		}
-                		else{
-                    			*last_slash = '\0';
-                		}
-            		}
+            	char *last_slash = strrchr(current_path, '/');
+            	if (last_slash != NULL){
+                	if (last_slash == current_path){
+                    		// 已到根目录
+                    	current_path[1] = '\0';
+                	}
+                	else{
+                    	*last_slash = '\0';
+                	}
+            	}
         	}
     	}
     	else{
         	// 进入子目录，追加到 current_path
         	if (strcmp(current_path, "/") != 0){
-            		strncat(current_path, "/", MAX_PATH - strlen(current_path) - 1);
+            	strncat(current_path, "/", MAX_PATH - strlen(current_path) - 1);
         	}
         	strncat(current_path, dirname, MAX_PATH - strlen(current_path) - 1);
     	}
