@@ -81,18 +81,26 @@ unsigned int write(int fd, char *buf, unsigned int size){
 	block_off = off % BLOCKSIZ;
 	block = off/BLOCKSIZ;
 
-	if (block_off+size<BLOCKSIZ){
+	if (block_off+size<BLOCKSIZ){ 
 		memcpy(disk+DATASTART+inode->di_addr[block]*BLOCKSIZ+block_off, buf, size);
 		return size;
 	}
 	memcpy(disk+DATASTART+inode->di_addr[block]*BLOCKSIZ+block_off,temp_buf,BLOCKSIZ-block_off);
-
 	temp_buf += BLOCKSIZ-block_off;
 	for (i=0; i<(size-(BLOCKSIZ-block_off))/BLOCKSIZ; i++){
+		if (block + 1 + i >= NADDR) {
+        	printf("Error: Exceeding file block limits.\n");
+        	return 0;
+    	}
 		memcpy(disk+DATASTART+inode->di_addr[block+1+i]*BLOCKSIZ, temp_buf, BLOCKSIZ);
 		temp_buf += BLOCKSIZ;
 	}
+	block += 1 + i; 
 	block_off = (size-(BLOCKSIZ-block_off)) % BLOCKSIZ;
+	if (block >= NADDR) {
+    	printf("Error: Final block exceeds file block limits.\n");
+    	return 0;
+	}
 	memcpy(disk+DATASTART+block*BLOCKSIZ, temp_buf, block_off);
 	sys_ofile[user[user_id].u_ofile[fd]].f_off += size;
 	return size;
