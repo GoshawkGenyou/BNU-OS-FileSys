@@ -51,21 +51,21 @@ void mkdir(char* dirname) {
 	if (dirid != -1) {
 		inode = iget(dirid);
 		if (inode->di_mode & DIDIR)
-			printf("Ŀ¼%s�Ѵ��ڣ�\n", dirname); //xiao
+			printf("目录%s已存在！\n", dirname); //xiao
 		else
-			printf("%s��һ���ļ���\n", dirname);
+			printf("%s是一个文件！\n", dirname);
 		iput(inode);
 		return;
 	}
-	dirpos = iname(dirname);					//ȡ����addr�еĿ�����λ��,����Ŀ¼��д��������
-	inode = ialloc();							//����i�ڵ�
-	dir.direct[dirpos].d_ino = inode->i_ino;	//���ø�Ŀ¼�Ĵ���i�ڵ��
-	dir.size++;									//Ŀ¼��++		
+	dirpos = iname(dirname);					//取得在addr中的空闲项位置,并将目录名写到此项里
+	inode = ialloc();							//分配i节点
+	dir.direct[dirpos].d_ino = inode->i_ino;	//设置该目录的磁盘i节点号
+	dir.size++;									//目录数++		
 
-	strcpy(buf[0].d_name, "..");					//��Ŀ¼����һ��Ŀ¼ ��ǰĿ¼
+	strcpy(buf[0].d_name, "..");					//子目录的上一层目录 当前目录
 	buf[0].d_ino = cur_path_inode->i_ino;
 	strcpy(buf[1].d_name, ".");
-	buf[1].d_ino = inode->i_ino;				//��Ŀ¼�ı�Ŀ¼ ��Ŀ¼
+	buf[1].d_ino = inode->i_ino;				//子目录的本目录 子目录
 	block = balloc();
 	memcpy(disk + DATASTART + block * BLOCKSIZ, buf, BLOCKSIZ);
 
