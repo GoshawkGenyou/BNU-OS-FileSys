@@ -1,4 +1,5 @@
 #include "filesys.h"
+
 #define CLEN 10
 #define CNUM 10 
 //enum ctype  
@@ -10,7 +11,8 @@ char commands[CNUM][CLEN]={
 "mkfile",
 "del",
 "write",
-"read"
+"read",
+"adduser"
 };
 int getcid(char *command){
 	int i;
@@ -24,103 +26,116 @@ int getcid(char *command){
 }
 int shell(int user_id,char *str){
 	char seps[] =" \t\n\0";
-	char* token,*tstr,*buf;
+	char* token,*tstr,*buf,*tstr1;
 	unsigned short mode;
 	int cid,size,fd;
 	token = strtok(str,seps);
 	if(token == NULL)
 		return 1;
 	cid = getcid(token);
-	switch(cid){
+	switch (cid) {
 	case 1:
 		_dir();
 		break;
 	case 2:
-		token = strtok(NULL,seps);
-		if(token == NULL){
-			printf("mkdirÃüÁîµÄÕıÈ·¸ñÊ½Îªmkdir dirname£¬Çë¼ì²éÃüÁî!\n");
+		token = strtok(NULL, seps);
+		if (token == NULL) {
+			printf("mkdirå‘½ä»¤çš„æ­£ç¡®æ ¼å¼ä¸ºmkdir dirnameï¼Œè¯·æ£€æŸ¥å‘½ä»¤!\n");
 			break;
 		}
 		mkdir(token);
 		break;
 	case 3:
-		token = strtok(NULL,seps);
-		if(token == NULL){
-			printf("cdÃüÁîµÄÕıÈ·¸ñÊ½Îªcd dirname£¬Çë¼ì²éÃüÁî!\n");
+		token = strtok(NULL, seps);
+		if (token == NULL) {
+			printf("cdå‘½ä»¤çš„æ­£ç¡®æ ¼å¼ä¸ºcd dirnameï¼Œè¯·æ£€æŸ¥å‘½ä»¤!\n");
 			break;
 		}
 		chdir(token);
 		break;
 	case 4:
-		token = strtok(NULL,seps);
-		if(token == NULL){
-			printf("mkfile ÃüÁîµÄÕıÈ·¸ñÊ½Îªmkfile filename [mode]£¬Çë¼ì²éÃüÁî!\n");
+		token = strtok(NULL, seps);
+		if (token == NULL) {
+			printf("mkfile å‘½ä»¤çš„æ­£ç¡®æ ¼å¼ä¸ºmkfile filename [mode]ï¼Œè¯·æ£€æŸ¥å‘½ä»¤!\n");
 			break;
 		}
-		tstr =token;
+		tstr = token;
 		mode = DEFAULTMODE;
-		token = strtok(NULL,seps);
-		if(token != NULL){
-			sscanf(token,"%o",&mode);
+		token = strtok(NULL, seps);
+		if (token != NULL) {
+			sscanf(token, "%o", &mode);
 		}
-		mode = mode|DIFILE|0700;
-		fd = creat(user_id,tstr,mode);
-		if(fd == -1){
-			printf("´´½¨ÎÄ¼şÊ§°Ü£¡\n");
+		mode = mode | DIFILE | 0700;
+		fd = creat(user_id, tstr, mode);
+		if (fd == -1) {
+			printf("åˆ›å»ºæ–‡ä»¶å¤±è´¥ï¼\n");
 			break;
 		}
-		close(user_id,fd);
+		close(user_id, fd);
 		break;
 	case 5:
-		token = strtok(NULL,seps);
-		if(token == NULL){
-			printf("del ÃüÁîµÄÕıÈ·¸ñÊ½Îªdel filename£¬Çë¼ì²éÃüÁî!\n");
+		token = strtok(NULL, seps);
+		if (token == NULL) {
+			printf("del å‘½ä»¤çš„æ­£ç¡®æ ¼å¼ä¸ºdel filenameï¼Œè¯·æ£€æŸ¥å‘½ä»¤!\n");
 			break;
 		}
 		delete(token);
 		break;
 	case 6:
 		mode = WRITE;
-		token = strtok(NULL,seps);
+		token = strtok(NULL, seps);
 		tstr = token;
-		token = strtok(NULL,seps);
-		if(token == NULL){
-			printf("write ÃüÁîµÄÕıÈ·¸ñÊ½Îªwrite filename bytes£¬Çë¼ì²éÃüÁî!\n");
+		token = strtok(NULL, seps);
+		if (token == NULL) {
+			printf("write å‘½ä»¤çš„æ­£ç¡®æ ¼å¼ä¸ºwrite filename bytesï¼Œè¯·æ£€æŸ¥å‘½ä»¤!\n");
 			break;
 		}
-		if(token[0] == '-'){
-			if(token[1] == 'a')
+		if (token[0] == '-') {
+			if (token[1] == 'a')
 				mode = FAPPEND;
-		}else{
-			sscanf(token,"%d",&size);
 		}
-		fd = open(user_id,tstr,char(mode));
+		else {
+			sscanf(token, "%d", &size);
+		}
+		fd = open(user_id, tstr, char(mode));
 		buf = (char*)malloc(size);
-		size = write(fd,buf,size);
-		printf("%d bytes have been writed in file %s.\n",size,tstr);
+		size = write(fd, buf, size);
+		printf("%d bytes have been writed in file %s.\n", size, tstr);
 		free(buf);
-		close(user_id,fd);
+		close(user_id, fd);
 		break;
 	case 7:
-		token = strtok(NULL,seps);
+		token = strtok(NULL, seps);
 		tstr = token;
-		token = strtok(NULL,seps);
-		if(token == NULL){
-			printf("read ÃüÁîµÄÕıÈ·¸ñÊ½Îªread filename bytes£¬Çë¼ì²éÃüÁî!\n");
+		token = strtok(NULL, seps);
+		if (token == NULL) {
+			printf("read å‘½ä»¤çš„æ­£ç¡®æ ¼å¼ä¸ºread filename bytesï¼Œè¯·æ£€æŸ¥å‘½ä»¤!\n");
 			break;
 		}
-		sscanf(token,"%d",&size);
-		fd = open(user_id,tstr,READ);
-		buf = (char*)malloc(size+1);
-		size = read(fd,buf,size);
-		printf("%d bytes have been read in buf from file %s.\n",size,tstr);
+		sscanf(token, "%d", &size);
+		fd = open(user_id, tstr, READ);
+		buf = (char*)malloc(size + 1);
+		size = read(fd, buf, size);
+		printf("%d bytes have been read in buf from file %s.\n", size, tstr);
 		free(buf);
-		close(user_id,fd);
+		close(user_id, fd);
+		break;
+	case 8:
+		token = strtok(NULL, seps);
+		tstr = token;
+		token = strtok(NULL, seps);
+		tstr1 = token;
+		token = strtok(NULL, seps);
+		if (token == NULL || tstr1 == NULL) {
+			printf("adduser å‘½ä»¤çš„æ­£ç¡®æ ¼å¼ä¸ºadduser username group passwordï¼Œè¯·æ£€æŸ¥å‘½ä»¤!\n");
+			break;
+		}
+		addUser(tstr, tstr1, token);
 		break;
 	case 0:
 		return 0;
 	default:
-		printf("´íÎó:Ã»ÓĞÃüÁî%s£¡\n",token);
+		printf("é”™è¯¯:æ²¡æœ‰å‘½ä»¤%sï¼\n",token);
 		break;
 	}
 	return 1;
